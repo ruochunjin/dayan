@@ -30,8 +30,8 @@ dev = ["pytest>=8.0", "ruff>=0.6"]
 dayan = "dayan.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/REPLACE-ORG/dayan"
-Issues = "https://github.com/REPLACE-ORG/dayan/issues"
+Homepage = "https://github.com/ruochunjin/dayan"
+Issues = "https://github.com/ruochunjin/dayan/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/dayan"]

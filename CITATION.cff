@@ -6,6 +6,6 @@ message: >-
 type: software
 # TODO: add author list and repository URL before public release.
 authors: []
-url: "https://github.com/REPLACE-ORG/dayan"
+url: "https://github.com/ruochunjin/dayan"
 version: 0.1.0
 license: Apache-2.0
