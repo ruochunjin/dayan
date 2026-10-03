@@ -1,0 +1,56 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[project]
+name = "dayan-thought"
+version = "0.1.0"
+description = "DaYan (大衍): thought-graph modeling, process-level evaluation, pattern mining and verified data augmentation for LLM reasoning"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+keywords = ["LLM reasoning", "thought graph", "process evaluation", "data augmentation", "RL process reward"]
+authors = [{ name = "DaYan Developers" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# Core (thought graph, metrics, mining, optimize) is dependency-free.
+dependencies = []
+
+[project.optional-dependencies]
+llm = ["openai>=1.30"]
+augment = ["z3-solver>=4.12"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[project.scripts]
+dayan = "dayan.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/REPLACE-ORG/dayan"
+Issues = "https://github.com/REPLACE-ORG/dayan/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dayan"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# Ported research modules preserved close to the verified originals.
+"src/dayan/graph/instrument.py" = ["F841", "E501", "W605", "E701", "E702"]
+"src/dayan/graph/invoke.py" = ["W605", "E701"]
+"src/dayan/graph/graph.py" = ["E701"]
+"src/dayan/graph/functions.py" = ["F841", "E701", "E702"]
+"src/dayan/augment/pipeline.py" = ["F841"]
