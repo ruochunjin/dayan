@@ -1,0 +1,121 @@
+"""Thought-driven optimization: mined patterns → prompt rules / RL rewards.
+
+Two enhancement strategies from the Thought Mining paper, both derived from
+contrastive pattern mining (successful vs. failed reasoning runs):
+
+1. **Prompt optimization** — render success patterns as explicit rules to
+   inject into prompts (interpretable, no training);
+2. **Process reward** — a verifiable per-step reward for RL (GRPO-style):
+   a reasoning step earns +1 when its label sequence matches a success
+   pattern and −1 when it matches a failure pattern.  Being pattern-derived
+   rather than model-derived, the reward is explainable and resistant to
+   reward hacking.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Sequence
+
+from dayan.mining import Pattern
+
+
+def patterns_to_prompt_rules(
+    success_patterns: Sequence[Pattern],
+    failure_patterns: Sequence[Pattern] = (),
+    *,
+    limit: int = 10,
+) -> list[str]:
+    """Render mined patterns as natural-language reasoning rules."""
+
+    rules = []
+    for pattern in success_patterns[:limit]:
+        rules.append(
+            f"DO: follow the reasoning shape [{pattern.render()}] "
+            f"(seen in {pattern.graph_support} successful runs)"
+        )
+    for pattern in failure_patterns[:limit]:
+        rules.append(
+            f"AVOID: the reasoning shape [{pattern.render()}] "
+            f"(seen in {pattern.graph_support} failed runs)"
+        )
+    return rules
+
+
+def inject_rules_into_prompt(prompt: str, rules: Sequence[str]) -> str:
+    """Prepend mined rules to a prompt in a standard format."""
+
+    if not rules:
+        return prompt
+    block = "Reasoning guidelines derived from past runs:\n" + "\n".join(
+        f"{i + 1}. {rule}" for i, rule in enumerate(rules)
+    )
+    return f"{block}\n\n{prompt}"
+
+
+@dataclass(frozen=True, slots=True)
+class StepReward:
+    """One verifiable reward decision for a reasoning step."""
+
+    step_index: int
+    label_sequence: tuple[str, ...]
+    reward: float
+    matched_pattern: str | None
+
+
+class PatternProcessReward:
+    """Pattern-based per-step reward (GRPO-compatible callable).
+
+    Score a reasoning trajectory (sequence of step labels) by sliding the
+    mined pattern windows over it: success-pattern matches give +``gain``,
+    failure-pattern matches −``penalty``.
+    """
+
+    def __init__(
+        self,
+        success_patterns: Sequence[Pattern],
+        failure_patterns: Sequence[Pattern] = (),
+        *,
+        gain: float = 1.0,
+        penalty: float = 1.0,
+    ) -> None:
+        self.patterns: dict[tuple[str, ...], float] = {}
+        for pattern in success_patterns:
+            self.patterns[pattern.sequence] = gain
+        for pattern in failure_patterns:
+            self.patterns[pattern.sequence] = -penalty
+        self.gain, self.penalty = gain, penalty
+
+    def score_trajectory(self, labels: Sequence[str]) -> list[StepReward]:
+        """Score every window-aligned step of one trajectory."""
+
+        rewards: list[StepReward] = []
+        if not self.patterns:
+            return rewards
+        length = max(len(seq) for seq in self.patterns)
+        for start in range(len(labels)):
+            for size in range(2, length + 1):
+                window = tuple(labels[start : start + size])
+                if window in self.patterns:
+                    rewards.append(
+                        StepReward(
+                            step_index=start,
+                            label_sequence=window,
+                            reward=self.patterns[window],
+                            matched_pattern=" → ".join(window),
+                        )
+                    )
+        return rewards
+
+    def __call__(self, labels: Sequence[str]) -> float:
+        """Total trajectory reward (the RL-facing interface)."""
+
+        return sum(step.reward for step in self.score_trajectory(labels))
+
+
+__all__ = [
+    "PatternProcessReward",
+    "StepReward",
+    "inject_rules_into_prompt",
+    "patterns_to_prompt_rules",
+]
