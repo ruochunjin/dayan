@@ -54,8 +54,8 @@ class EfficiencyDiscriminationTests(unittest.TestCase):
         linear_eff = reasoning_efficiency(linear_patterns)
         branched_eff = reasoning_efficiency(branched_patterns)
         print(
-            f"\n[discrimination] linear κ={linear_eff.avg_branching:.2f} "
-            f"vs branched κ={branched_eff.avg_branching:.2f}"
+            f"\n[discrimination] linear kappa={linear_eff.avg_branching:.2f} "
+            f"vs branched kappa={branched_eff.avg_branching:.2f}"
         )
         self.assertGreater(branched_eff.avg_branching, linear_eff.avg_branching)
         self.assertEqual(linear_eff.avg_branching, 1.0)
