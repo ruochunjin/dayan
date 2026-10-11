@@ -26,7 +26,7 @@ _ROWS = [
 class LogicalDaE2ETests(unittest.TestCase):
     def test_verified_augmentation_with_z3(self) -> None:
         from dayan.augment import PipelineConfig, SimpleWorkflow, run_dataset
-        from dayan.augment.data import Dataset, infer_schema
+        from dayan.augment.data import Dataset
         from dayan.llm import AnthropicClient
 
         path = Path("benchmarks/data/rte_toy.json")
