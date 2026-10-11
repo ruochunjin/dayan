@@ -73,14 +73,24 @@ dayan augment --dataset records.json --output augmented.json --solver z3
 The pipeline (attribute extraction → diversity filtering → label-flipped
 generation → symbolic verification → reflection) runs on any OpenAI-compatible
 endpoint; `DAYAN_API_KEY` / `DAYAN_BASE_URL` / `DAYAN_MODEL` configure it
-(falling back to `OPENAI_*`).  Solvers: `z3`, `prover9`, `rules`, `csp`
+(falling back to `OPENAI_*`).  An Anthropic-messages endpoint (e.g. K3) works
+via `DAYAN_BACKEND=anthropic`.  Solvers: `z3`, `prover9`, `rules`, `csp`
 (auto-detected), with an `llm` fallback.
+
+## Measured end-to-end (K3 endpoint)
+
+| Suite | Result |
+| --- | --- |
+| Instrumented reasoning smoke | program → 4-node Thought Graph, correct answer, metrics on the real trace |
+| Game24 thought mining (6 puzzles, single-shot) | **0.83 accuracy**; multipath reliability gain +0.17; SCS 1.00 |
+| Metric discrimination (synthetic) | branched κ=3.00 vs linear κ=1.00 — efficiency metric separates backtracking from chains |
+| Logical DA on RTE-style samples | 4 inputs → 11 generated, **7/11 verified by Z3** (symbolic), 5 rejected |
 
 ## Installation
 
 ```bash
 pip install -e .              # core is dependency-free
-pip install -e ".[llm]"       # default OpenAI-compatible backend
+pip install -e ".[llm]"       # optional OpenAI SDK backend (stdlib works too)
 pip install -e ".[augment]"   # z3-solver for label verification
 pip install -e ".[dev]"       # tests + lint
 ```
