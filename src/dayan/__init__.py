@@ -43,7 +43,7 @@ from dayan.optimize import (
     patterns_to_prompt_rules,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "AnalysisOutput",

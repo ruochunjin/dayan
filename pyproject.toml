@@ -3,8 +3,8 @@ build-backend = "hatchling.build"
 requires = ["hatchling"]
 
 [project]
-name = "dayan-thought"
-version = "0.1.0"
+name = "dayan"
+version = "0.2.0"
 description = "DaYan (大衍): thought-graph modeling, process-level evaluation, pattern mining and verified data augmentation for LLM reasoning"
 readme = "README.md"
 requires-python = ">=3.10"
