@@ -2,10 +2,13 @@ cff-version: 1.2.0
 title: "DaYan (大衍): thought-graph modeling and process evaluation for LLM reasoning"
 message: >-
   If you use this software, please cite both the software and the
-  underlying research papers (Thought Mining; Logical DA).
+  underlying research papers (Thought Mining; Logical DA)
+  — see README.md for BibTeX entries.
 type: software
-# TODO: add author list and repository URL before public release.
-authors: []
+authors:
+  - family-names: Jin
+    given-names: Ruochun
 url: "https://github.com/ruochunjin/dayan"
-version: 0.1.0
+repository-code: "https://github.com/ruochunjin/dayan"
+version: 0.2.0
 license: Apache-2.0

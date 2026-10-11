@@ -102,7 +102,25 @@ pip install -e ".[dev]"       # tests + lint
 - **Logical DA** (ACL 2025 Findings) — multi-agent data augmentation with
   symbolic label verification.
 
-If you use DaYan, please cite these works (see CITATION.cff).
+If you use DaYan, please cite these works (see CITATION.cff):
+
+```bibtex
+@inproceedings{wang2027thought,
+  title={Thought Mining for Large Language Model Reasoning},
+  author={Wang, Xi and Huang, Zixiao and Zhang, Tailai and Tang, Yuhua and Jin, Ruochun},
+  booktitle={Proceedings of the VLDB Endowment (VLDB 2027)},
+  year={2027},
+  note={Corresponding author: Ruochun Jin}
+}
+
+@inproceedings{zheng2025logical,
+  title={Logical da: Enhancing data augmentation for logical reasoning via a multi-agent system},
+  author={Zheng, Haoqi and Wang, Dong and Yang, Silin and Qi, Yunpeng and Jin, Ruochun and Xu, Liyang},
+  booktitle={Findings of the Association for Computational Linguistics: ACL 2025},
+  pages={6843--6855},
+  year={2025}
+}
+```
 
 ## License
 

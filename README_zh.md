@@ -46,8 +46,30 @@ dayan augment --dataset records.json --output augmented.json --solver z3
 
 ## 学术脉络
 
-- *Thought Mining for Large Language Model Reasoning*——Thought Graph 数据模型、五个过程指标、两种增强策略
+- *Thought Mining for Large Language Model Reasoning*（VLDB 2027）——Thought Graph 数据模型、五个过程指标、两种增强策略
 - *Logical DA*（ACL 2025 Findings）——多智能体数据增广与符号标签验证
+
+## 引用本工作
+
+如果您在工作中使用了大衍，请引用相关论文（另见 CITATION.cff）：
+
+```bibtex
+@inproceedings{wang2027thought,
+  title={Thought Mining for Large Language Model Reasoning},
+  author={Wang, Xi and Huang, Zixiao and Zhang, Tailai and Tang, Yuhua and Jin, Ruochun},
+  booktitle={Proceedings of the VLDB Endowment (VLDB 2027)},
+  year={2027},
+  note={Corresponding author: Ruochun Jin}
+}
+
+@inproceedings{zheng2025logical,
+  title={Logical da: Enhancing data augmentation for logical reasoning via a multi-agent system},
+  author={Zheng, Haoqi and Wang, Dong and Yang, Silin and Qi, Yunpeng and Jin, Ruochun and Xu, Liyang},
+  booktitle={Findings of the Association for Computational Linguistics: ACL 2025},
+  pages={6843--6855},
+  year={2025}
+}
+```
 
 ## 许可
 
