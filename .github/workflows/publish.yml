@@ -1,0 +1,47 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build sdist and wheel
+        run: |
+          pip install build
+          python -m build
+      - name: Twine check
+        run: |
+          pip install twine
+          twine check dist/*
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dayan-dist
+          path: dist/
+
+  pypi:
+    # PyPI Trusted Publishing (OIDC): no stored token.  Configure once on
+    # pypi.org — Manage project → Publishing → add GitHub publisher with
+    # owner ruochunjin, repository dayan, workflow publish.yml,
+    # environment name "pypi".
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/dayan
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dayan-dist
+          path: dist/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
