@@ -9,7 +9,6 @@ Nothing connects at import time.
 
 from __future__ import annotations
 
-import os
 import re
 from typing import Callable, Iterator, Optional, Tuple, Union
 
@@ -31,32 +30,23 @@ def set_backend(fn: LLMFn) -> None:
 
 
 def _default_backend() -> LLMFn:
-    """OpenAI-compatible default, configured via DAYAN_*/OPENAI_* env vars."""
+    """Environment-configured default (``DAYAN_BACKEND``).
 
-    from openai import OpenAI  # lazy: optional dependency
+    ``anthropic`` for a K3-style messages endpoint; any OpenAI-compatible
+    endpoint otherwise.  Stdlib only — no SDK dependency.
+    """
 
-    client = OpenAI(
-        api_key=os.environ.get("DAYAN_API_KEY") or os.environ.get("OPENAI_API_KEY"),
-        base_url=os.environ.get("DAYAN_BASE_URL") or os.environ.get("OPENAI_BASE_URL"),
-    )
-    model = os.environ.get("DAYAN_MODEL") or os.environ.get("OPENAI_MODEL") or "gpt-4o"
+    from dayan.llm import default_client
+
+    client = default_client()
 
     def call(context: str, instruction: str, temperature: float) -> str:
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": (
-                    "You are a precise reasoning engine."
-                    "You must strictly follow the output format requirements. "
-                    "Always wrap your final result between <OUTPUT> and </OUTPUT> tags."
-                )},
-                {"role": "user", "content": context + "\n\n" + instruction},
-            ],
-            temperature=temperature,
+        prompt = (
+            "You are a precise reasoning engine. You must strictly follow the "
+            "output format requirements. Always wrap your final result between "
+            "<OUTPUT> and </OUTPUT> tags.\n\n" + context + "\n\n" + instruction
         )
-        output = response.choices[0].message.content
-        assert output is not None
-        return output
+        return client.chat(prompt, temperature=temperature)
 
     return call
 
