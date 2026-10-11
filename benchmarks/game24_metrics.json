@@ -1,0 +1,93 @@
+{
+  "rows": [
+    {
+      "puzzle": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "expr": "4*4+4+4",
+      "model_ok": false,
+      "value": 24,
+      "correct": true,
+      "nodes": 5,
+      "edges": 0
+    },
+    {
+      "puzzle": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expr": "4 * 3 * 2 * 1",
+      "model_ok": false,
+      "value": 24,
+      "correct": true,
+      "nodes": 5,
+      "edges": 0
+    },
+    {
+      "puzzle": [
+        6,
+        6,
+        2,
+        3
+      ],
+      "expr": "(6+6)*(3-2/2)",
+      "model_ok": false,
+      "value": 24.0,
+      "correct": true,
+      "nodes": 5,
+      "edges": 0
+    },
+    {
+      "puzzle": [
+        8,
+        8,
+        3,
+        2
+      ],
+      "expr": "8/(3-8/3)",
+      "model_ok": false,
+      "value": 23.99999999999999,
+      "correct": true,
+      "nodes": 5,
+      "edges": 0
+    },
+    {
+      "puzzle": [
+        5,
+        5,
+        5,
+        2
+      ],
+      "expr": "(5*5)-(5/2)",
+      "model_ok": false,
+      "value": 22.5,
+      "correct": false,
+      "nodes": 5,
+      "edges": 0
+    },
+    {
+      "puzzle": [
+        3,
+        3,
+        8,
+        8
+      ],
+      "expr": "8/(3-8/3)",
+      "model_ok": false,
+      "value": 23.99999999999999,
+      "correct": true,
+      "nodes": 5,
+      "edges": 0
+    }
+  ],
+  "n_correct": 5,
+  "multipath_reliability": 0.16666666666666663,
+  "commonality_kl_first_two": 0.0,
+  "scs_mean": 1.0,
+  "accuracy": 0.8333333333333334
+}
