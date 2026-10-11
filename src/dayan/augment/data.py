@@ -81,6 +81,19 @@ class Schema:
         if self.kind == "nli":
             relation = canonical_relation(value)
             allowed = {canonical_relation(label): label for label in labels}
+            # Index the entailment-form of every label too: datasets labeled
+            # plain "True"/"False" must resolve solver relations
+            # "entailment"/"contradiction" back to them (Logical DA z3 fix).
+            for label in labels:
+                canon = canonical_relation(label)
+                mapped = {
+                    "true": "entailment",
+                    "entailed": "entailment",
+                    "false": "contradiction",
+                    "contradicted": "contradiction",
+                }.get(canon)
+                if mapped:
+                    allowed.setdefault(mapped, label)
             if relation in allowed:
                 return allowed[relation]
             relation = {

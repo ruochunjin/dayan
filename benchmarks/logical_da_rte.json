@@ -1,0 +1,334 @@
+{
+  "report": {
+    "source": "benchmarks\\data\\rte_toy.json",
+    "input_records": 4,
+    "processed_records": 4,
+    "generated_records": 11,
+    "relabeled_records": 0,
+    "rejected_candidates": 5,
+    "records_without_augmentation": 0,
+    "initial_samples": 12,
+    "reflection_attempts": 9,
+    "verification_modes": {
+      "symbolic": 7,
+      "llm_fallback": 4
+    },
+    "preferred_solver": "z3",
+    "symbolic_solvers": {
+      "z3": 7
+    },
+    "diversity_backend": "lexical",
+    "diversity_fallback_reason": "No module named 'sentence_transformers'"
+  },
+  "audit": [
+    {
+      "source_index": 0,
+      "source_id": "r1",
+      "label_space": [
+        "True",
+        "False"
+      ],
+      "initial_samples": 3,
+      "selected_seeds": 2,
+      "candidates": [
+        {
+          "id": "f0",
+          "requested_label": "True",
+          "reflection_rounds": 0,
+          "symbolic_solver": "z3",
+          "status": "accepted",
+          "final_label": "True",
+          "verification_method": "symbolic",
+          "explanation": "The premise states all felines are mammals, and the hypothesis states Whiskers is a feline, so by universal instantiation Whiskers must be a mammal.",
+          "output_id": "r1__logical_da_1"
+        },
+        {
+          "id": "f1",
+          "requested_label": "False",
+          "reflection_rounds": 0,
+          "status": "accepted",
+          "final_label": "False",
+          "verification_method": "llm_fallback",
+          "explanation": "The premise states all dogs are animals, but the hypothesis assumes Tom is a cat; there is no stated relationship between cats and dogs or cats and animals, so the conclusion does not follow.",
+          "output_id": "r1__logical_da_2",
+          "symbolic_error": "z3: Solver result cannot be mapped to a dataset label"
+        },
+        {
+          "id": "f2",
+          "requested_label": "True",
+          "reflection_rounds": 1,
+          "status": "accepted",
+          "final_label": "True",
+          "verification_method": "llm_fallback",
+          "explanation": "The premise states that all dogs are animals. The hypothesis states that Tom is an animal given that Tom is a dog. This is a direct logical entailment (modus ponens): if Tom is a dog, and all dogs are animals, then Tom must be an animal.",
+          "output_id": "r1__logical_da_3",
+          "symbolic_error": "z3: Z3 could not parse or execute the program: b'(error \"line 1 column 20: Invalid constant declaration: unknown sort \\'Dog\\'\")\\n(error \"line 2 column 19: Invalid constant declaration: unknown sort \\'Animal\\'\")\\n(error \"line 3 column 20: invalid sorted variables: unknown sort \\'Dog\\'\")\\n(error \"line 4 column 13: unknown constant Tom\")\\n'"
+        },
+        {
+          "id": "f3",
+          "requested_label": "False",
+          "reflection_rounds": 0,
+          "status": "accepted",
+          "final_label": "False",
+          "verification_method": "llm_fallback",
+          "explanation": "The premise states some cats are animals (existential), which does not guarantee that any specific cat such as Felix is an animal.",
+          "output_id": "r1__logical_da_4",
+          "symbolic_error": "z3: Solver result cannot be mapped to a dataset label"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "source_index": 1,
+      "source_id": "r2",
+      "label_space": [
+        "True",
+        "False"
+      ],
+      "initial_samples": 3,
+      "selected_seeds": 2,
+      "candidates": [
+        {
+          "id": "f0",
+          "requested_label": "True",
+          "reflection_rounds": 1,
+          "symbolic_solver": "z3",
+          "status": "accepted",
+          "final_label": "True",
+          "verification_method": "symbolic",
+          "explanation": "The premise states Rex is a bird and all birds can fly. Therefore Rex can fly, and the hypothesis restates both facts.",
+          "output_id": "r2__logical_da_5"
+        },
+        {
+          "id": "f1",
+          "requested_label": "False",
+          "reflection_rounds": 1,
+          "status": "rejected",
+          "error": "Duplicate text"
+        },
+        {
+          "id": "f2",
+          "requested_label": "True",
+          "reflection_rounds": 1,
+          "symbolic_solver": "z3",
+          "status": "accepted",
+          "final_label": "True",
+          "verification_method": "symbolic",
+          "explanation": "The premise states Rex is a dog and all dogs can fly. Therefore Rex can fly, and the hypothesis restates both facts.",
+          "output_id": "r2__logical_da_6"
+        },
+        {
+          "id": "f3",
+          "requested_label": "False",
+          "reflection_rounds": 1,
+          "status": "accepted",
+          "final_label": "False",
+          "verification_method": "llm_fallback",
+          "explanation": "The premise only states that no cat can swim. It provides no information about Whiskers being a bird or able to swim, so the hypothesis is not entailed.",
+          "output_id": "r2__logical_da_7",
+          "symbolic_error": "z3: Solver result cannot be mapped to a dataset label"
+        }
+      ],
+      "errors": [
+        "reflection f1: duplicate text"
+      ]
+    },
+    {
+      "source_index": 2,
+      "source_id": "r3",
+      "label_space": [
+        "True",
+        "False"
+      ],
+      "initial_samples": 3,
+      "selected_seeds": 2,
+      "candidates": [
+        {
+          "id": "f0",
+          "requested_label": "True",
+          "reflection_rounds": 1,
+          "status": "rejected",
+          "error": "z3 inferred True; LLM inferred False",
+          "verification_method": "conflict",
+          "symbolic_solver": "z3"
+        },
+        {
+          "id": "f1",
+          "requested_label": "False",
+          "reflection_rounds": 1,
+          "status": "rejected",
+          "error": "Generated sample is identical to its source"
+        },
+        {
+          "id": "f2",
+          "requested_label": "True",
+          "reflection_rounds": 1,
+          "status": "rejected",
+          "error": "Duplicate text"
+        },
+        {
+          "id": "f3",
+          "requested_label": "False",
+          "reflection_rounds": 0,
+          "symbolic_solver": "z3",
+          "status": "accepted",
+          "final_label": "False",
+          "verification_method": "symbolic",
+          "explanation": "The premise explicitly states that whales are hairless and lack fur entirely, which directly contradicts the hypothesis that whales have fur.",
+          "output_id": "r3__logical_da_8"
+        }
+      ],
+      "errors": [
+        "reflection f1: Generated sample is identical to its source",
+        "reflection f2: duplicate text"
+      ]
+    },
+    {
+      "source_index": 3,
+      "source_id": "r4",
+      "label_space": [
+        "True",
+        "False"
+      ],
+      "initial_samples": 3,
+      "selected_seeds": 2,
+      "candidates": [
+        {
+          "id": "f0",
+          "requested_label": "True",
+          "reflection_rounds": 0,
+          "symbolic_solver": "z3",
+          "status": "accepted",
+          "final_label": "True",
+          "verification_method": "symbolic",
+          "explanation": "The premise 'Every bird sings' is semantically equivalent to 'All birds sing'.",
+          "output_id": "r4__logical_da_9"
+        },
+        {
+          "id": "f1",
+          "requested_label": "False",
+          "reflection_rounds": 0,
+          "symbolic_solver": "z3",
+          "status": "accepted",
+          "final_label": "False",
+          "verification_method": "symbolic",
+          "explanation": "The premise 'Birds never bloom' directly contradicts the hypothesis 'All birds bloom'.",
+          "output_id": "r4__logical_da_10"
+        },
+        {
+          "id": "f2",
+          "requested_label": "True",
+          "reflection_rounds": 0,
+          "symbolic_solver": "z3",
+          "status": "accepted",
+          "final_label": "True",
+          "verification_method": "symbolic",
+          "explanation": "The hypothesis is identical to the premise, so it is trivially entailed.",
+          "output_id": "r4__logical_da_11"
+        },
+        {
+          "id": "f3",
+          "requested_label": "False",
+          "reflection_rounds": 1,
+          "status": "rejected",
+          "error": "Generated sample is identical to its source"
+        }
+      ],
+      "errors": [
+        "reflection f3: Generated sample is identical to its source"
+      ]
+    }
+  ],
+  "output_rows": [
+    {
+      "id": "r1",
+      "premise": "All cats are animals.",
+      "hypothesis": "Tom is an animal, given that Tom is a cat.",
+      "label": "True"
+    },
+    {
+      "id": "r2",
+      "premise": "No dog can fly.",
+      "hypothesis": "Rex can fly, and Rex is a dog.",
+      "label": "False"
+    },
+    {
+      "id": "r3",
+      "premise": "Every mammal breathes air.",
+      "hypothesis": "Whales breathe air because whales are mammals.",
+      "label": "True"
+    },
+    {
+      "id": "r4",
+      "premise": "Some birds sing.",
+      "hypothesis": "All birds sing.",
+      "label": "False"
+    },
+    {
+      "id": "r1__logical_da_1",
+      "premise": "All felines are mammals.",
+      "hypothesis": "Whiskers is a mammal, given that Whiskers is a feline.",
+      "label": "True"
+    },
+    {
+      "id": "r1__logical_da_2",
+      "premise": "All dogs are animals.",
+      "hypothesis": "Tom is an animal, given that Tom is a cat.",
+      "label": "False"
+    },
+    {
+      "id": "r1__logical_da_3",
+      "premise": "Every dog is an animal.",
+      "hypothesis": "Tom is an animal, given that Tom is a dog.",
+      "label": "True"
+    },
+    {
+      "id": "r1__logical_da_4",
+      "premise": "Some cats are animals.",
+      "hypothesis": "Felix is an animal, given that Felix is a cat.",
+      "label": "False"
+    },
+    {
+      "id": "r2__logical_da_5",
+      "premise": "Rex is a bird. All birds can fly.",
+      "hypothesis": "Rex can fly, and Rex is a bird.",
+      "label": "True"
+    },
+    {
+      "id": "r2__logical_da_6",
+      "premise": "Rex is a dog. All dogs can fly.",
+      "hypothesis": "Rex can fly, and Rex is a dog.",
+      "label": "True"
+    },
+    {
+      "id": "r2__logical_da_7",
+      "premise": "No cat can swim.",
+      "hypothesis": "Whiskers can swim, and Whiskers is a bird.",
+      "label": "False"
+    },
+    {
+      "id": "r3__logical_da_8",
+      "premise": "Most mammals have fur, but whales are hairless marine mammals that lack fur entirely.",
+      "hypothesis": "Whales have fur because whales are mammals.",
+      "label": "False"
+    },
+    {
+      "id": "r4__logical_da_9",
+      "premise": "Every bird sings.",
+      "hypothesis": "All birds sing.",
+      "label": "True"
+    },
+    {
+      "id": "r4__logical_da_10",
+      "premise": "Birds never bloom.",
+      "hypothesis": "All birds bloom.",
+      "label": "False"
+    },
+    {
+      "id": "r4__logical_da_11",
+      "premise": "All birds bloom.",
+      "hypothesis": "All birds bloom.",
+      "label": "True"
+    }
+  ]
+}
