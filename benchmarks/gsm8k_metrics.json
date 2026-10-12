@@ -1,0 +1,81 @@
+{
+  "rows": [
+    {
+      "i": 0,
+      "gold": 18.0,
+      "pred": 18.0,
+      "correct": true,
+      "verified": true,
+      "nodes": 1,
+      "edges": 0
+    },
+    {
+      "i": 1,
+      "gold": 3.0,
+      "pred": 3.0,
+      "correct": true,
+      "verified": true,
+      "nodes": 1,
+      "edges": 0
+    },
+    {
+      "i": 2,
+      "gold": 70000.0,
+      "pred": 70000.0,
+      "correct": true,
+      "verified": true,
+      "nodes": 1,
+      "edges": 0
+    },
+    {
+      "i": 3,
+      "gold": 540.0,
+      "pred": 540.0,
+      "correct": true,
+      "verified": false,
+      "nodes": 1,
+      "edges": 0
+    },
+    {
+      "i": 4,
+      "gold": 20.0,
+      "pred": 20.0,
+      "correct": true,
+      "verified": false,
+      "nodes": 1,
+      "edges": 0
+    },
+    {
+      "i": 5,
+      "gold": 64.0,
+      "pred": 64.0,
+      "correct": true,
+      "verified": false,
+      "nodes": 1,
+      "edges": 0
+    },
+    {
+      "i": 6,
+      "gold": 260.0,
+      "pred": 260.0,
+      "correct": true,
+      "verified": false,
+      "nodes": 1,
+      "edges": 0
+    },
+    {
+      "i": 7,
+      "gold": 160.0,
+      "pred": 140.0,
+      "correct": false,
+      "verified": false,
+      "nodes": 1,
+      "edges": 0
+    }
+  ],
+  "accuracy": 0.875,
+  "verified_rate": 0.375,
+  "multipath_reliability": 0.125,
+  "scs_mean": 1.0,
+  "commonality_kl_first_two": 0.0
+}
