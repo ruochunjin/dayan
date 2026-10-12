@@ -36,7 +36,13 @@ from dayan.metrics import (
     reasoning_efficiency,
     stepwise_consistency,
 )
-from dayan.mining import Pattern, contrastive_patterns, mine_frequent_patterns
+from dayan.mining import (
+    Pattern,
+    StarPattern,
+    contrastive_patterns,
+    mine_frequent_patterns,
+    mine_frequent_stars,
+)
 from dayan.optimize import (
     PatternProcessReward,
     inject_rules_into_prompt,
@@ -63,7 +69,9 @@ __all__ = [
     "crucial_node_judgment",
     "enumerate_paths",
     "inject_rules_into_prompt",
+    "StarPattern",
     "mine_frequent_patterns",
+    "mine_frequent_stars",
     "multipath_reliability",
     "node_influence",
     "path_distribution",

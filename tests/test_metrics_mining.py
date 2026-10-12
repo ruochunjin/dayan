@@ -134,5 +134,64 @@ class MiningAndOptimizeTests(unittest.TestCase):
         self.assertEqual(reward_fn(["ROOT"]), 0.0)
 
 
+class StarMiningTests(unittest.TestCase):
+    """Star-subgraph mining: center label + sorted multiset of child labels."""
+
+    def test_frequent_star_found_with_graph_support(self) -> None:
+        from dayan import mine_frequent_stars
+
+        graphs = [make_graph(branches=2, depth=2, prefix=f"g{k}") for k in range(3)]
+        stars = mine_frequent_stars(graphs, min_arity=2, min_support=2)
+        # ROOT fans out to two LLM children in every graph.
+        root_star = next(s for s in stars if s.center == "ROOT")
+        self.assertEqual(root_star.children, ("LLM", "LLM"))
+        self.assertEqual(root_star.graph_support, 3)
+        self.assertEqual(root_star.support, 3)
+        self.assertEqual(root_star.first_layer, 0)
+        self.assertEqual(root_star.arity, 2)
+
+    def test_edge_insertion_order_does_not_matter(self) -> None:
+        from dayan import mine_frequent_stars
+
+        def graph_with_order(prefix: str, order: list[str]) -> ThoughtGraph:
+            g = ThoughtGraph()
+            g.add_node(f"{prefix}c", "PLAN", {"value": None})
+            for i, lab in enumerate(order):
+                g.add_node(f"{prefix}{i}", lab, {"value": None})
+                g.add_edge(f"{prefix}c", f"{prefix}{i}")
+            return g
+
+        a = graph_with_order("a", ["LLM", "TOOL", "LLM"])
+        b = graph_with_order("b", ["TOOL", "LLM", "LLM"])
+        stars = mine_frequent_stars([a, b], min_arity=3, min_support=2)
+        self.assertEqual(len(stars), 1)
+        self.assertEqual(stars[0].children, ("LLM", "LLM", "TOOL"))
+        self.assertEqual(stars[0].graph_support, 2)
+
+    def test_min_arity_and_min_support_filter(self) -> None:
+        from dayan import mine_frequent_stars
+
+        chains = []
+        for k in range(4):
+            g = ThoughtGraph()
+            g.add_node(f"c{k}", "ROOT", {"value": None})
+            g.add_node(f"c{k}x", "LLM", {"value": None})
+            g.add_edge(f"c{k}", f"c{k}x")
+            chains.append(g)
+        # out-degree-1 nodes are not stars at min_arity=2.
+        self.assertEqual(mine_frequent_stars(chains, min_arity=2, min_support=2), [])
+        graphs = [make_graph(prefix=f"h{k}") for k in range(2)]
+        self.assertEqual(mine_frequent_stars(graphs, min_arity=2, min_support=5), [])
+
+    def test_render_is_readable(self) -> None:
+        from dayan import mine_frequent_stars
+
+        stars = mine_frequent_stars([make_graph(prefix="r0"), make_graph(prefix="r1")],
+                                    min_arity=2, min_support=2)
+        rendered = next(s for s in stars if s.center == "ROOT").render()
+        self.assertIn("ROOT", rendered)
+        self.assertIn("LLM", rendered)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

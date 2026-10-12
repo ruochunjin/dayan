@@ -93,6 +93,81 @@ def mine_frequent_patterns(
     return patterns
 
 
+@dataclass(frozen=True, slots=True)
+class StarPattern:
+    """A recurring star subgraph: one center node and its child-label multiset.
+
+    Stars are the branching motifs a GraMi-style miner surfaces first — a
+    center that fans out to the same set of step kinds in many graphs is the
+    structural signature behind the κ (branching) efficiency term.
+    """
+
+    center: str
+    children: tuple[str, ...]  # sorted multiset of child labels
+    support: int  # node occurrences across the corpus
+    graph_support: int  # distinct graphs containing the star
+    first_layer: int  # earliest BFS layer of the center
+
+    @property
+    def arity(self) -> int:
+        return len(self.children)
+
+    def render(self) -> str:
+        return f"{self.center} → {{{', '.join(self.children)}}}"
+
+
+def mine_frequent_stars(
+    graphs: Sequence[ThoughtGraph],
+    *,
+    min_arity: int = 2,
+    min_support: int = 2,
+) -> list[StarPattern]:
+    """Mine frequent star subgraphs (center + all children) from a corpus.
+
+    A star instance is a node with out-degree ≥ ``min_arity``; its identity
+    is the center label plus the *sorted multiset* of child labels, so edge
+    insertion order never changes the pattern.  Sorted by support (desc),
+    then center/children.
+    """
+
+    if min_arity < 2:
+        raise ValueError("min_arity must be >= 2")
+    occurrences: Counter[tuple[str, tuple[str, ...]]] = Counter()
+    graph_membership: dict[tuple[str, tuple[str, ...]], set[int]] = {}
+    layers: dict[tuple[str, tuple[str, ...]], int] = {}
+
+    for graph_id, graph in enumerate(graphs):
+        graph_layers = node_layers(graph)
+        children: dict[str, list[str]] = {}
+        for src, dst in graph.edges:
+            children.setdefault(src, []).append(dst)
+        for center_node, child_nodes in children.items():
+            if len(child_nodes) < min_arity:
+                continue
+            key = (
+                graph.labels.get(center_node, "?"),
+                tuple(sorted(graph.labels.get(child, "?") for child in child_nodes)),
+            )
+            occurrences[key] += 1
+            graph_membership.setdefault(key, set()).add(graph_id)
+            layer = graph_layers.get(center_node, 0)
+            layers[key] = min(layers.get(key, layer), layer)
+
+    stars = [
+        StarPattern(
+            center=center,
+            children=children_key,
+            support=count,
+            graph_support=len(graph_membership[(center, children_key)]),
+            first_layer=layers[(center, children_key)],
+        )
+        for (center, children_key), count in occurrences.items()
+        if count >= min_support
+    ]
+    stars.sort(key=lambda s: (-s.support, s.center, s.children))
+    return stars
+
+
 def contrastive_patterns(
     success_graphs: Sequence[ThoughtGraph],
     failure_graphs: Sequence[ThoughtGraph],
@@ -116,4 +191,4 @@ def contrastive_patterns(
     )
 
 
-__all__ = ["Pattern", "contrastive_patterns", "mine_frequent_patterns"]
+__all__ = ["Pattern", "StarPattern", "contrastive_patterns", "mine_frequent_patterns", "mine_frequent_stars"]
