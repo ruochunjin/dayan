@@ -90,7 +90,10 @@ def _build_regex_from_template(formatted_template: str) -> str:
     """Convert a filled template to a lenient regex with capture groups."""
 
     pattern = re.escape(formatted_template)
-    pattern = re.sub(r'\\[.*?\\]', r'\s*<(.*?)>\s*', pattern)
+    # The replacement goes through re.sub's TEMPLATE parser, where \s is a
+    # bad escape (re.PatternError on Python ≥3.12) — a lambda returns it
+    # literally instead (instrumentation fuzz battery, 2026-10-12).
+    pattern = re.sub(r'\\[.*?\\]', lambda _m: r'\s*<(.*?)>\s*', pattern)
     return r'^\s*(?:[\d\-\*\.]+\s*)?' + pattern
 
 
