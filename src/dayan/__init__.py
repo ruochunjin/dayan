@@ -47,6 +47,7 @@ from dayan.optimize import (
     PatternProcessReward,
     inject_rules_into_prompt,
     patterns_to_prompt_rules,
+    stars_to_prompt_rules,
 )
 
 __version__ = "0.2.0"
@@ -76,6 +77,7 @@ __all__ = [
     "node_influence",
     "path_distribution",
     "patterns_to_prompt_rules",
+    "stars_to_prompt_rules",
     "query",
     "query_iter",
     "reasoning_commonality",

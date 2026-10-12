@@ -193,5 +193,40 @@ class StarMiningTests(unittest.TestCase):
         self.assertIn("LLM", rendered)
 
 
+class StarOptimizeTests(unittest.TestCase):
+    """Star patterns feed prompt rules and graph-level process rewards."""
+
+    def test_stars_to_prompt_rules(self) -> None:
+        from dayan import StarPattern, stars_to_prompt_rules
+
+        good = [StarPattern("ROOT", ("LLM", "LLM"), support=3, graph_support=3, first_layer=0)]
+        bad = [StarPattern("LLM", ("LLM", "LLM", "LLM", "LLM"), support=4, graph_support=2, first_layer=1)]
+        rules = stars_to_prompt_rules(good, bad)
+        self.assertTrue(any(r.startswith("DO") and "ROOT" in r for r in rules))
+        avoid = next(r for r in rules if r.startswith("AVOID"))
+        self.assertIn("4", avoid)  # arity surfaces in the rule text
+        self.assertIn("LLM", avoid)
+
+    def test_star_process_reward_on_graph(self) -> None:
+        from dayan import PatternProcessReward, StarPattern
+
+        reward_fn = PatternProcessReward(
+            success_stars=[StarPattern("ROOT", ("LLM", "LLM"), 3, 3, 0)],
+            failure_stars=[StarPattern("LLM", ("LLM", "LLM"), 4, 2, 1)],
+        )
+        # root fans out to two LLM (success star); each LLM fans out to two
+        # LLM leaves (failure star) -> +1 for root, -1 for each mid node.
+        total = reward_fn.score_graph(make_graph(branches=2, depth=2))
+        self.assertAlmostEqual(total, 1.0 - 2.0)
+        # edge insertion order cannot change the outcome
+        self.assertAlmostEqual(reward_fn.score_graph(make_graph(branches=2, depth=2, prefix="z")), -1.0)
+
+    def test_graph_reward_empty_without_stars(self) -> None:
+        from dayan import PatternProcessReward
+
+        reward_fn = PatternProcessReward()
+        self.assertEqual(reward_fn.score_graph(make_graph()), 0.0)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
