@@ -15,7 +15,7 @@ from pathlib import Path
 _ENABLED = os.environ.get("DAYAN_RUN_E2E") == "1"
 REPORT = Path(__file__).parent.parent / "benchmarks" / "gsm8k_metrics.json"
 
-_N = 8
+_N = int(os.environ.get("DAYAN_GSM8K_N", "8"))
 
 
 def _gold_number(answer: str) -> float | None:
@@ -114,6 +114,38 @@ class Gsm8kThoughtMiningTests(unittest.TestCase):
         reliability = multipath_reliability(samples)
         scs = [stepwise_consistency(s) for s in samples]
         dists = [path_distribution(s.graph) for s in samples]
+
+        # Star mining + graph-level reward on the real collected traces:
+        # contrastive stars between correct/incorrect runs, then a reward
+        # built from them must rank successful graphs above failures.
+        from dayan import (
+            PatternProcessReward,
+            mine_frequent_stars,
+            stars_to_prompt_rules,
+        )
+
+        ok_graphs = [s.graph for s in samples if s.success]
+        bad_graphs = [s.graph for s in samples if not s.success]
+        mined = {}
+        if ok_graphs and bad_graphs:
+            good_stars = mine_frequent_stars(ok_graphs, min_arity=2, min_support=2)
+            bad_stars = mine_frequent_stars(bad_graphs, min_arity=2, min_support=1)
+            reward_fn = PatternProcessReward(
+                success_stars=good_stars, failure_stars=bad_stars
+            )
+            ok_scores = [reward_fn.score_graph(g) for g in ok_graphs]
+            bad_scores = [reward_fn.score_graph(g) for g in bad_graphs]
+            mined = {
+                "success_stars": [s.render() for s in good_stars[:5]],
+                "failure_stars": [s.render() for s in bad_stars[:5]],
+                "rules": stars_to_prompt_rules(good_stars, bad_stars, limit=4),
+                "reward_ok_mean": sum(ok_scores) / len(ok_scores),
+                "reward_bad_mean": sum(bad_scores) / len(bad_scores),
+            }
+            print(f"[gsm8k] star reward: ok={mined['reward_ok_mean']:+.2f} "
+                  f"bad={mined['reward_bad_mean']:+.2f}")
+            print(f"[gsm8k] rules: {mined['rules']}")
+
         report = {
             "rows": rows,
             "accuracy": sum(r["correct"] for r in rows) / len(rows),
@@ -121,6 +153,7 @@ class Gsm8kThoughtMiningTests(unittest.TestCase):
             "multipath_reliability": reliability,
             "scs_mean": sum(scs) / len(scs),
             "commonality_kl_first_two": reasoning_commonality(dists[0], dists[1]) if len(dists) > 1 else None,
+            "star_mining": mined,
         }
         REPORT.parent.mkdir(parents=True, exist_ok=True)
         REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")

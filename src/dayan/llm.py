@@ -69,7 +69,7 @@ class AnthropicClient:
             self.base_url, self.api_key, self.model = _anthropic_credentials()
         self.url = self.base_url.rstrip("/") + "/v1/messages"
         self.timeout = timeout or float(os.environ.get("DAYAN_TIMEOUT", "180"))
-        self.retries = retries or int(os.environ.get("DAYAN_RETRIES", "3"))
+        self.retries = retries or int(os.environ.get("DAYAN_RETRIES", "6"))
 
     def chat(self, prompt: str, *, temperature: float = 0.0, max_tokens: int | None = None) -> str:
         body: dict = {
@@ -152,7 +152,7 @@ class ChatClient:
         if not self.model:
             raise ValueError("Set DAYAN_MODEL (or pass model=) to the endpoint's model name")
         self.timeout = timeout or float(os.environ.get("DAYAN_TIMEOUT", "180"))
-        self.retries = retries or int(os.environ.get("DAYAN_RETRIES", "3"))
+        self.retries = retries or int(os.environ.get("DAYAN_RETRIES", "6"))
 
     def chat(self, prompt: str, *, temperature: float = 0.0, max_tokens: int | None = None) -> str:
         body: dict = {
